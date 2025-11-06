@@ -26,4 +26,15 @@ app.get('/api/data', (req, res) => {
   });
 });
 
+app.post('/api/signUp', (req, res) => {
+  const { username, password, email } = req.body;
+
+  const query = 'INSERT INTO users (username, password, email) VALUES (?, ?, ?)';
+  
+  db.query(query, [username, password, email], (err, result) => {
+    if (err) return res.status(500).send(err);
+    res.send({ message: 'User registered successfully!' });
+  });
+});
+
 app.listen(3001, () => console.log('Server running on port 3001'));
