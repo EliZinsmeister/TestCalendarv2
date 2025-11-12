@@ -26,8 +26,43 @@ app.get('/api/data', (req, res) => {
   });
 });
 
+app.post('/api/login', (req, res) => {
+  const {password, email} = req.body;
+  console.log(req.body);
+
+  const query = 'SELECT password FROM users WHERE email = ?';
+  
+  db.query(query, [email], (err, result) => {
+    if (err) {
+      console.error('Database error:', err);
+      res.json({ success: false});
+      res.send({ message:'Database error' });
+    }
+
+    if (result.length === 0) {
+      // No user found
+      res.json({ success: false});
+      res.send({ message:'Username error' });
+    }
+
+    console.log('Query result:', result);
+
+    
+    user = result[0];
+
+    // if (password === user.password) {
+    //   res.json({ boolean: true});
+    // }
+    // else {
+    //   res.json({ boolean: false});
+    // }
+  });
+
+});
+
 app.post('/api/signUp', (req, res) => {
   const { username, password, email } = req.body;
+  console.log(req.body);
 
   const query = 'INSERT INTO users (username, password, email) VALUES (?, ?, ?)';
   

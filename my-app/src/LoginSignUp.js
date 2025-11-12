@@ -1,16 +1,33 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './LoginSignUp.css'; 
 import axios from 'axios';
 
 
 const LoginForm = ({ onToggle }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+        password: '',
+        email: ''
+    });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Login attempt:', { email, password });
+  const handleChange = e => {
+      setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log(formData);
+
+    const res = await axios.post('http://localhost:3001/api/login', formData)
+
+    if (res.data.boolean === true) {
+      navigate(`/Profile`);
+    }
+    else{
+      alert('Invalid email or password. Please try again.');
+    }
+  }
 
   return (
     <>
@@ -22,8 +39,8 @@ const LoginForm = ({ onToggle }) => {
             type="email"
             id="login-email"
             className="form-input"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            name="email"
+            onChange={handleChange}
             required
           />
         </div>
@@ -33,8 +50,8 @@ const LoginForm = ({ onToggle }) => {
             type="password"
             id="login-password"
             className="form-input"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            name="password"
+            onChange={handleChange}
             required
           />
         </div>
@@ -50,6 +67,7 @@ const LoginForm = ({ onToggle }) => {
 };
 
 const SignupForm = ({ onToggle }) => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         username: '',
         password: '',
