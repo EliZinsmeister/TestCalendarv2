@@ -50,12 +50,12 @@ app.post('/api/login', (req, res) => {
     
     user = result[0];
 
-    // if (password === user.password) {
-    //   res.json({ boolean: true});
-    // }
-    // else {
-    //   res.json({ boolean: false});
-    // }
+    if (password === user.password) {
+      res.json({ boolean: true});
+    }
+    else {
+      res.json({ boolean: false});
+    }
   });
 
 });
