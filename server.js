@@ -64,11 +64,28 @@ app.post('/api/signUp', (req, res) => {
   const { username, password, email } = req.body;
   console.log(req.body);
 
-  const query = 'INSERT INTO users (username, password, email) VALUES (?, ?, ?)';
+  const query = 'SELECT email FROM users WHERE email = ?';
   
-  db.query(query, [username, password, email], (err, result) => {
-    if (err) return res.status(500).send(err);
-    res.send({ message: 'User registered successfully!' });
+  db.query(query, [email], (err, result) => {
+    if (err) {
+      console.error('Database error:', err);
+      res.json({ success: false});
+      res.send({ message:'Database error' });
+    }
+
+    if (result.length === 0) {
+      const query = 'INSERT INTO users (username, password, email) VALUES (?, ?, ?)';
+      db.query(query, [username, password, email], (err, result) => {
+        if (err) return res.status(500).send(err);
+        res.send({ message: 'User registered successfully!' });
+      });
+    }
+    else{
+      if (err) return res.status(500).send(err);
+      res.send({ message: 'Email already registered!' });
+    }
+
+    console.log('Query result:', result);
   });
 });
 
