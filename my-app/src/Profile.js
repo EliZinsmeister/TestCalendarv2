@@ -4,10 +4,10 @@ import './Profile.css';
 
 const Profile = () => {
   const [student, setStudent] = useState({
-    firstName: 'Alex',
-    lastName: 'Johnson',
-    email: 'alex.johnson@villageschool.edu',
-    gradeLevel: '10th Grade',
+    firstName: user ? user.firstName : '',
+    lastName: user ? user.lastName : '',
+    email: user ? user.email : '',
+    gradeLevel: user ? user.gradeLevel : '',
     profilePicUrl: 'https://placehold.co/100x100/9BD3DD/00283C?text=AJ&font=roboto',
   });
 
