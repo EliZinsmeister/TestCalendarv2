@@ -25,43 +25,57 @@ app.get('/api/data', (req, res) => {
     res.json(results);
   });
 });
+app.get('/api/login', (req, res) => {
+  if (!req.session.user) {
+    return res.json({
+      boolean: false,
+      message: "Not logged in"
+    });
+  }
 
+  return res.json({
+    boolean: true,
+    user: req.session.user
+  });
+});
 app.post('/api/login', (req, res) => {
-  const {password, email} = req.body;
-  console.log(req.body);
+  const { email, password } = req.body;
 
-  const query = 'SELECT password FROM users WHERE email = ?';
-  
+  const query = 'SELECT firstName, lastName, email, gradeLevel, password FROM users WHERE email = ?';
+
   db.query(query, [email], (err, result) => {
     if (err) {
       console.error('Database error:', err);
-      res.json({ success: false});
-      res.send({ message:'Database error' });
+      return res.json({ boolean: false, message: 'Database error' });
     }
 
     if (result.length === 0) {
-      // No user found
-      res.json({ success: false});
-      res.send({ message:'Username error' });
+      return res.json({ boolean: false, message: 'Email not found' });
     }
 
-    console.log('Query result:', result);
+    const user = result[0];
 
-    
-    user = result[0];
+    if (password !== user.password) {
+      return res.json({ boolean: false, message: 'Incorrect password' });
+    }
 
-    if (password === user.password) {
-      res.json({ boolean: true});
-    }
-    else {
-      res.json({ boolean: false});
-    }
+    // Store user in session
+    req.session.user = {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      gradeLevel: user.gradeLevel
+    };
+
+    return res.json({
+      boolean: true,
+      user: req.session.user
+    });
   });
-
 });
 
 app.post('/api/signUp', (req, res) => {
-  const { username, password, email } = req.body;
+  const {firstName, password, email } = req.body;
   console.log(req.body);
 
   const query = 'SELECT email FROM users WHERE email = ?';
@@ -74,8 +88,8 @@ app.post('/api/signUp', (req, res) => {
     }
 
     if (result.length === 0) {
-      const query = 'INSERT INTO users (username, password, email) VALUES (?, ?, ?)';
-      db.query(query, [username, password, email], (err, result) => {
+      const query = 'INSERT INTO users (firstName, lastName, email, gradeLevel, password) VALUES (?, ?, ?, ?, ?)';
+      db.query(query, [firstName, '', email, 9, password], (err, result) => {
         if (err) return res.status(500).send(err);
         res.send({ message: 'User registered successfully!' });
       });

@@ -19,7 +19,9 @@ const LoginForm = ({ onToggle }) => {
     e.preventDefault();
     console.log(formData);
 
-    const res = await axios.post('http://localhost:3001/api/login', formData)
+    const res = await axios.post('http://localhost:3001/api/login', formData, {
+      withCredentials: true
+    });
 
     if (res.data.boolean === true) {
       navigate(`/Profile`);
@@ -69,7 +71,7 @@ const LoginForm = ({ onToggle }) => {
 const SignupForm = ({ onToggle }) => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        username: '',
+        firstName: '',
         password: '',
         email: ''
     });
@@ -82,9 +84,9 @@ const SignupForm = ({ onToggle }) => {
         e.preventDefault();
         console.log(formData);
 
-        axios.post('http://localhost:3001/api/signUp', formData)
-            .then(res => alert(res.data.message))
-            .catch(err => console.error(err));
+        axios.post('http://localhost:3001/api/signUp', formData, {
+          withCredentials: true
+        });
     };
 
   return (
@@ -97,7 +99,7 @@ const SignupForm = ({ onToggle }) => {
             type="text"
             id="signup-name"
             className="form-input"
-            name="username"
+            name="firstName"
             onChange={handleChange}
             required
           />
